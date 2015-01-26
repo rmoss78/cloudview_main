@@ -7,6 +7,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.scene.*;
 import com.jme3.util.BufferUtils;
 import java.io.File;
+import java.net.URL;
 
 public class Main extends SimpleApplication {
 
@@ -25,7 +26,9 @@ public class Main extends SimpleApplication {
 //        lineVerticies[2]=new Vector3f(0,1,1);
 //        lineVerticies[3]=new Vector3f(1,1,1);
 //        lineVerticies[4]=new Vector3f(1,4,0);
-        File f = new File("C:\\Users\\Robert\\Documents\\jMonkey Projects\\Main\\src\\Main\\Frame0067");
+//        File f = new File("C:\\Users\\Robert\\Documents\\jMonkey Projects\\Main\\src\\Main\\Frame0067");
+        URL url = getClass().getResource("Frame0067");
+        File f = new File(url.getPath());
         SPLFrame frame = new SPLFrame(f);
         Vector3f[] lineVerticies = frame.getCloud();
         
