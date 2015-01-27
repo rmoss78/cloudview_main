@@ -5,21 +5,33 @@ import com.jme3.material.Material;
 import com.jme3.math.*;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.*;
+import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.util.BufferUtils;
 import java.io.File;
 import java.net.URL;
+import static Main.SPLSensorConstants.*;
+import com.jme3.system.AppSettings;
+
 
 public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
         //settings.setTitle("SpectroScan3D Viewer");
         Main app = new Main();
-        //app.setSettings(settings);
+
+        app.setShowSettings(false);
+        AppSettings settings = new AppSettings(true);
+        settings.setResolution(1280, 720);
+        settings.setBitsPerPixel(32);
+        app.setSettings(settings);
+
         app.start();
     }
 
     @Override
     public void simpleInitApp() {
+        flyCam.setMoveSpeed(15);
+        flyCam.setZoomSpeed(15f);
         URL url = getClass().getResource("Frame0067");
         File f = new File(url.getPath());
         SPLFrame frame = new SPLFrame(f);
@@ -28,31 +40,59 @@ public class Main extends SimpleApplication {
     }
 
 
-    public void plotPoints(Vector3f[] lineVerticies, ColorRGBA pointColor){
-        Mesh mesh = new Mesh();
-        mesh.setMode(Mesh.Mode.Points);
+    public void plotPoints(Vector3f[] verticies, ColorRGBA pointColor){
+        
+        Mesh m = new Mesh();
+        m.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(verticies));
+        m.updateBound();
+        
+        // *************************************************************************
+        // Show mesh vertices as colored points
+        // *************************************************************************
+        Mesh cMesh = m.clone();
+        cMesh.setMode(Mesh.Mode.Points);
+        cMesh.updateBound();
+        cMesh.setStatic();
+        
+        Geometry points = new Geometry("Points", cMesh);
+        
+        Material matVC = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matVC.setBoolean("VertexColor", true);
 
-        mesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(lineVerticies));
+        //We have imagesize vertices and 4 color values for each of them.
+        float[] colorArray = new float[imagesize*4];
+        int colorIndex = 0;
 
-        mesh.updateBound();
-        mesh.updateCounts();
+        //Set custom RGBA value for each Vertex. Values range from 0.0f to 1.0f
+        for(int i = 0; i < imagesize; i++){
+           // Red value (is increased by 0.9/imagesize on each next vertex)
+           colorArray[colorIndex++] = 0.1f + (0.9f/imagesize*i);
+           // Green value (is reduced by 0.9/imagesize on each next vertex)
+           colorArray[colorIndex++] = 0.9f - (0.9f/imagesize*i);
+           // Blue value (remains the same)
+           colorArray[colorIndex++] = 0.5f;
+           // Alpha value (no transparency set)
+           colorArray[colorIndex++] = 1.0f;
+        }
+        
+        // Set the color buffer
+        cMesh.setBuffer(Type.Color, 4, colorArray);
+        points.setMaterial(matVC);
+        rootNode.attachChild(points);
 
-        Geometry geo = new Geometry("line", mesh);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", pointColor);
-        geo.setMaterial(mat);
-
-        rootNode.attachChild(geo);
     }
 
 
     @Override
     public void simpleUpdate(float tpf) {
         //TODO: add update code
+         /* Interact with game events in the main loop */
     }
 
     @Override
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
+        /* (optional) Make advanced modifications to frameBuffer and scene graph. */
+        
     }
 }
