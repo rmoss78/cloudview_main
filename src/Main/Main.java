@@ -12,26 +12,18 @@ import java.net.URL;
 public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
+        //settings.setTitle("SpectroScan3D Viewer");
         Main app = new Main();
+        //app.setSettings(settings);
         app.start();
     }
 
     @Override
     public void simpleInitApp() {
-
-//        Vector3f[] lineVerticies = new Vector3f[5];
-//
-//        lineVerticies[0]=new Vector3f(2,0,0);
-//        lineVerticies[1]=new Vector3f(-1,0,1);
-//        lineVerticies[2]=new Vector3f(0,1,1);
-//        lineVerticies[3]=new Vector3f(1,1,1);
-//        lineVerticies[4]=new Vector3f(1,4,0);
-//        File f = new File("C:\\Users\\Robert\\Documents\\jMonkey Projects\\Main\\src\\Main\\Frame0067");
         URL url = getClass().getResource("Frame0067");
         File f = new File(url.getPath());
         SPLFrame frame = new SPLFrame(f);
         Vector3f[] lineVerticies = frame.getCloud();
-        
         plotPoints(lineVerticies, ColorRGBA.White);
     }
 
